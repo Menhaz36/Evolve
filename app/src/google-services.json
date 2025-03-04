@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "824958294974",
+    "project_id": "evolve-1e82b",
+    "storage_bucket": "evolve-1e82b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824958294974:android:c5331175c4242d48dcb7ef",
+        "android_client_info": {
+          "package_name": "com.example.evolve"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEqGCCUCWgekN6rDwOj89Ed3iz-c6n0n8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
