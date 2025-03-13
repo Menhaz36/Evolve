@@ -4,12 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 
 class Register : AppCompatActivity() {
 
@@ -35,6 +37,15 @@ class Register : AppCompatActivity() {
         val passwordEditText = findViewById<EditText>(R.id.editTextPassword)
         val registerButton = findViewById<Button>(R.id.btnLogin)
 
+        val tvGoToSignIn = findViewById<TextView>(R.id.textViewLink2)
+
+
+
+        tvGoToSignIn.setOnClickListener { // 4️⃣
+            val intent = Intent(this, Login::class.java)
+            startActivity(intent)
+        }
+
         registerButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
@@ -52,11 +63,27 @@ class Register : AppCompatActivity() {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, MainActivity::class.java))  // Redirect to MainActivity
-                    finish()
+
+                    val user = auth.currentUser
+                    user?.sendEmailVerification() // Send verification email
+                        ?.addOnCompleteListener { verifyTask ->
+                            if (verifyTask.isSuccessful) {
+                                auth.signOut() // Sign out user immediately after registration
+                                startActivity(Intent(this, Login::class.java)) // Redirect to login
+                                finish()
+                            } else {
+                                Toast.makeText(this, "Failed to send verification email.", Toast.LENGTH_LONG).show()
+                            }
+                        }
                 } else {
                     Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                }
+
+                // Check if the email already exists
+                if (task.exception is FirebaseAuthUserCollisionException) {
+                    Toast.makeText(this, "Email already exists. Please log in.", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                 }
             }
     }

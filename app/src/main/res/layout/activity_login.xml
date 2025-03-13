@@ -18,6 +18,7 @@
         android:text="LOGIN"
         android:textColor="@color/login_text"
         android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/cardView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

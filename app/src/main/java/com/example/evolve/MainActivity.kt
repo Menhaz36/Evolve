@@ -1,9 +1,11 @@
 package com.example.evolve
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 
-/*import androidx.activity.ComponentActivity
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,41 +15,41 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.evolve.ui.theme.EvolveTheme */
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.example.evolve.ui.theme.EvolveTheme
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
-    /*override fun onCreate(savedInstanceState: Bundle?) {
+
+    private lateinit var auth: FirebaseAuth  // Firebase authentication instance
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            EvolveTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+        setContentView(R.layout.mainpage)
+
+        auth = FirebaseAuth.getInstance()
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.Mainpage)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
         }
-    }*/
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_login) // Ensure this matches your XML file name
-//    }
-}
 
-/*@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+        val loginButton = findViewById<Button>(R.id.btnLogout)
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    EvolveTheme {
-        Greeting("Android")
+        loginButton.setOnClickListener{
+            auth.signOut()  // Sign out user from Firebase
+            val intent = Intent(this, Login::class.java) //Creates an Intent to navigate from Main to Login class.
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK//Clears the back stack so users can't go back to MainActivity after logging out.
+            startActivity(intent)
+            finish()
+        }
+
+
     }
-}*/
+
+}
+
+
