@@ -30,10 +30,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }*/
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login) // Ensure this matches your XML file name
-    }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setContentView(R.layout.activity_login) // Ensure this matches your XML file name
+//    }
 }
 
 /*@Composable

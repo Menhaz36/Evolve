@@ -1,28 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#1E1E2A"
-    android:id="@+id/login"
-    tools:context=".MainActivity">
-
+    tools:context=".Register">
     <TextView
         android:id="@+id/logintext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="148dp"
         android:layout_marginTop="192dp"
-        android:text="LOGIN"
+        android:text="Sign up"
         android:textColor="@color/login_text"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -54,15 +51,15 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:textColor="@color/black"
                 android:background="@drawable/textbox_email"
                 android:hint="Enter Email"
-                android:minHeight="48dp"
                 android:paddingStart="8dp"
-                android:textColor="@color/black"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textViewEmail" />
+                app:layout_constraintTop_toBottomOf="@id/textViewEmail"
+                android:minHeight="48dp"/>
 
 
             <TextView
@@ -84,13 +81,13 @@
                 android:background="@drawable/textbox_email"
                 android:hint="Enter Password"
                 android:inputType="textPassword"
-                android:minHeight="48dp"
-                android:paddingStart="8dp"
                 android:textColor="@color/black"
+                android:paddingStart="8dp"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textViewPassword" />
+                app:layout_constraintTop_toBottomOf="@id/textViewPassword"
+                android:minHeight="48dp"/>
 
             <Button
                 android:id="@+id/btnLogin"
@@ -98,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:backgroundTint="@color/login_text"
-                android:text="Login"
+                android:text="Register"
                 android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -106,21 +103,5 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:id="@+id/textViewLink"
-        android:layout_width="317dp"
-        android:layout_height="48dp"
-        android:text="Dont have an account yet? Sign UP"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.702"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.752"
-
-        android:clickable="true"
-        android:focusable="true"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
