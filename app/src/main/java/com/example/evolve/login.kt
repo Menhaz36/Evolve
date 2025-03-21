@@ -16,7 +16,6 @@ class Login : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth  // Firebase authentication instance
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
@@ -35,14 +34,11 @@ class Login : AppCompatActivity() {
         val passwordEditText = findViewById<EditText>(R.id.editTextPassword)
         val loginButton = findViewById<Button>(R.id.btnLogin)
 
-
-
-        val go_to_signup=findViewById<TextView>(R.id.textViewLink)      //Finds the TextView (ToSignUp) in the XML layout (activity_sign_in.xml) so we can use it in Kotlin.
-        go_to_signup.setOnClickListener{                                // Adds a click event to go_to_signup (the "Sign Up" text).When the user clicks the text, the code inside { } executes
-            val intent = Intent(this, Register::class.java) //Creates an Intent to navigate from login to Register.
+        val goToSignup = findViewById<TextView>(R.id.textViewLink)
+        goToSignup.setOnClickListener {
+            val intent = Intent(this, Register::class.java)
             startActivity(intent)
-        }                                                                   //        Starts SignUpActivity, meaning the Sign Up screen open
-          //Register::class.java is the target screen we want to open.
+        }
 
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
@@ -55,7 +51,6 @@ class Login : AppCompatActivity() {
 
             loginUser(email, password)
         }
-
     }
 
     private fun loginUser(email: String, password: String) {
@@ -64,12 +59,15 @@ class Login : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val user = auth.currentUser
                     if (user != null && user.isEmailVerified) {
+                        // ✅ Save login state
+                        val preferences = getSharedPreferences("UserSession", MODE_PRIVATE)
+                        preferences.edit().putBoolean("isLoggedIn", true).apply()
+
                         Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                         finish()  // Close LoginActivity so user can't go back
-                    }
-                    else{
+                    } else {
                         auth.signOut() // Prevent unverified users from staying logged in
                         Toast.makeText(this, "Please verify your email before logging in.", Toast.LENGTH_LONG).show()
                     }

@@ -7,11 +7,14 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
+    <color name="niche_wala">#97979F</color>
     <color name="login_bg">#1E1E2A</color>
     <color name="login_box">#2B2B3C</color>
     <color name="login_button">#D9D9D9</color>
     <color name="login_text">#DEC5C5</color>
+    <color name="bg">#1A1A22</color>
+    <color name="baxa">#2B2B3C</color>
+
 
 
 </resources>

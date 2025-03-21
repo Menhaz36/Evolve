@@ -2,54 +2,50 @@ package com.example.evolve
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.evolve.ui.theme.EvolveTheme
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth  // Firebase authentication instance
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.mainpage)
 
+        // ✅ Check login state before setting the UI
+        val preferences = getSharedPreferences("UserSession", MODE_PRIVATE)
+        val isLoggedIn = preferences.getBoolean("isLoggedIn", true)
+
+        if (!isLoggedIn) {
+            val intent = Intent(this, Login::class.java)
+            startActivity(intent)
+            finish()
+            return  // ✅ Stops further execution
+        }
+
+        // ✅ Now set the UI after login check
+        setContentView(R.layout.temp)
         auth = FirebaseAuth.getInstance()
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.Mainpage)) { v, insets ->
+        // ✅ Make sure the ID exists in your XML
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.Temp)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        val loginButton = findViewById<Button>(R.id.btnLogout)
+        // ✅ Logout functionality
+        val logoutTextView = findViewById<TextView>(R.id.textView3)
+        logoutTextView.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            preferences.edit().putBoolean("isLoggedIn", false).apply()
 
-        loginButton.setOnClickListener{
-            auth.signOut()  // Sign out user from Firebase
-            val intent = Intent(this, Login::class.java) //Creates an Intent to navigate from Main to Login class.
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK//Clears the back stack so users can't go back to MainActivity after logging out.
+            val intent = Intent(this, Login::class.java)
             startActivity(intent)
             finish()
         }
-
-
     }
-
 }
-
-

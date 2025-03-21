@@ -68,6 +68,7 @@ class Register : AppCompatActivity() {
                     user?.sendEmailVerification() // Send verification email
                         ?.addOnCompleteListener { verifyTask ->
                             if (verifyTask.isSuccessful) {
+                                Toast.makeText(this, "Please verify your email", Toast.LENGTH_LONG).show()
                                 auth.signOut() // Sign out user immediately after registration
                                 startActivity(Intent(this, Login::class.java)) // Redirect to login
                                 finish()
@@ -82,8 +83,6 @@ class Register : AppCompatActivity() {
                 // Check if the email already exists
                 if (task.exception is FirebaseAuthUserCollisionException) {
                     Toast.makeText(this, "Email already exists. Please log in.", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                 }
             }
     }
