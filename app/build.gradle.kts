@@ -66,17 +66,17 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation ("com.google.firebase:firebase-auth:23.2.0")
-    implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-database")
-    implementation("com.google.firebase:firebase-storage")
-    implementation("com.google.firebase:firebase-messaging")
+    implementation(libs.firebase.analytics)
+    implementation (libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.messaging)
 
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.cardview:cardview:1.0.0")
+    implementation(libs.androidx.constraintlayout.v214)
+    implementation(libs.androidx.cardview)
 
-    implementation("com.google.android.gms:play-services-fitness:21.1.0")
-    implementation("com.google.android.gms:play-services-auth:21.1.1")
+    implementation(libs.play.services.fitness)
+    implementation(libs.play.services.auth)
 
 }
