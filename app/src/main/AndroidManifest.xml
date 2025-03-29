@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.BODY_SENSORS"/>
 
     <!-- For Activity Recognition (detecting walking, running, etc.) -->
-    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -34,7 +34,7 @@
         <activity
             android:name=".Register"
             android:theme="@style/Theme.Evolve"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".Login"
             android:exported="true">
