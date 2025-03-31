@@ -1,12 +1,16 @@
 package com.example.evolve
 
 import android.content.Intent
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -26,6 +30,24 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private val GOOGLE_FIT_PERMISSION_REQUEST_CODE = 1001 // Unique request code
+
+    private val ACTIVITY_RECOGNITION_REQUEST_CODE = 1003
+
+    private fun requestActivityRecognitionPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACTIVITY_RECOGNITION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
+                ACTIVITY_RECOGNITION_REQUEST_CODE
+            )
+        } else{
+            Log.d("GoogleFit", "✅ ACTIVITY_RECOGNITION permission already granted")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +77,8 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        requestActivityRecognitionPermission()  // ✅ Ask permission before Google Fit
+
         // ✅ Setup Google Fit
         setupGoogleFit()
 
@@ -71,19 +95,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupGoogleFit() {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .requestScopes(com.google.android.gms.fitness.Fitness.SCOPE_ACTIVITY_READ)
+        val fitnessOptions = FitnessOptions.builder()
+            .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+            .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE, FitnessOptions.ACCESS_READ)
             .build()
 
-        val googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)
-        if (googleSignInAccount == null) {
-            val signInClient = GoogleSignIn.getClient(this, gso)
-            startActivityForResult(signInClient.signInIntent, 1002)
+        val googleSignInAccount = GoogleSignIn.getAccountForExtension(this, fitnessOptions)
+
+        if (!GoogleSignIn.hasPermissions(googleSignInAccount, fitnessOptions)) {
+            GoogleSignIn.requestPermissions(
+                this,
+                GOOGLE_FIT_PERMISSION_REQUEST_CODE,
+                googleSignInAccount,
+                fitnessOptions
+            )
         } else {
-            handler.post(runnable) // Start fetching steps every 3 seconds
+            Log.d("GoogleFit", "Google Fit permissions already granted ✅")
+            fetchStepsFromGoogleFit()
+            handler.post(runnable) // Start step tracking
         }
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == GOOGLE_FIT_PERMISSION_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Log.d("GoogleFit", "✅ Google Fit permissions granted")
+                fetchStepsFromGoogleFit() // Now safe to fetch steps
+            } else {
+                Log.e("GoogleFit", "❌ Google Fit permissions denied!")
+                stepCountTextView.text = "Google Fit access denied. Please grant permissions."
+            }
+        }
+    }
+
 
     // ✅ Runnable for continuous updates
     private val runnable = object : Runnable {
@@ -96,33 +141,49 @@ class MainActivity : AppCompatActivity() {
     private fun fetchStepsFromGoogleFit() {
         val googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)
         if (googleSignInAccount != null) {
-            val endTime = Calendar.getInstance().timeInMillis
+            val endTime = System.currentTimeMillis()
             val startTime = Calendar.getInstance().apply {
                 set(Calendar.HOUR_OF_DAY, 0)
                 set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)  // Ensure no leftover seconds
+                set(Calendar.MILLISECOND, 0)  // Reset milliseconds for accuracy
             }.timeInMillis
 
+            Log.d("GoogleFit", "Start Time: $startTime, End Time: $endTime")
+
             val readRequest = DataReadRequest.Builder()
-                .read(DataType.TYPE_STEP_COUNT_DELTA)
+                .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
+                .bucketByTime(1, TimeUnit.DAYS)
                 .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
                 .build()
 
             Fitness.getHistoryClient(this, googleSignInAccount)
                 .readData(readRequest)
                 .addOnSuccessListener { response ->
-                    val totalSteps = response.getDataSet(DataType.TYPE_STEP_COUNT_DELTA)
-                        .dataPoints
-                        .sumOf { it.getValue(DataType.TYPE_STEP_COUNT_DELTA.fields[0]).asInt() }
+                    var totalSteps = 0
+                    for (bucket in response.buckets) {
+                        for (dataSet in bucket.dataSets) {
+                            for (dataPoint in dataSet.dataPoints) {
+                                for (field in dataPoint.dataType.fields) {
+                                    totalSteps += dataPoint.getValue(field).asInt()
+                                }
+                            }
+                        }
+                    }
 
+                    Log.d("GoogleFit", "✅ Steps fetched successfully: $totalSteps")
                     runOnUiThread {
                         stepCountTextView.text = "Steps: $totalSteps"
                     }
                 }
-                .addOnFailureListener {
+                .addOnFailureListener { e ->
+                    Log.e("GoogleFit", "Failed to fetch steps", e)
                     runOnUiThread {
-                        stepCountTextView.text = "Failed to fetch steps"
+                        stepCountTextView.text = "Failed to fetch steps: ${e.localizedMessage}"
                     }
                 }
+        } else {
+            Log.e("GoogleFit", "GoogleSignInAccount is null")
         }
     }
 
