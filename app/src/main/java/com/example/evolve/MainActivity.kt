@@ -2,12 +2,20 @@ package com.example.evolve
 
 import android.content.Intent
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.KeyEvent
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -82,6 +90,39 @@ class MainActivity : AppCompatActivity() {
         // ✅ Setup Google Fit
         setupGoogleFit()
 
+        /////////////////////////////yaha
+        val editTextGoals = findViewById<EditText>(R.id.textView_goals)
+        val linearLayoutGoals = findViewById<LinearLayout>(R.id.linearLayoutGoals)
+
+// When user taps the layout, focus on EditText
+        linearLayoutGoals.setOnClickListener {
+            editTextGoals.isFocusableInTouchMode = true
+            editTextGoals.requestFocus()
+        }
+
+// Save goal when focus is lost
+        editTextGoals.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                saveGoal(editTextGoals.text.toString())
+            }
+        }
+
+// Handle Enter key press
+        editTextGoals.setOnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE ||
+                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+
+                saveGoal(editTextGoals.text.toString())
+                editTextGoals.clearFocus() // Remove focus
+                hideKeyboard(editTextGoals) // Hide keyboard
+                true
+            } else {
+                false
+            }
+        }
+
+        ///////////////////////////
+
         // ✅ Logout functionality
         val logoutTextView = findViewById<TextView>(R.id.textView3)
         logoutTextView.setOnClickListener {
@@ -92,6 +133,8 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
+
     }
 
     private fun setupGoogleFit() {
@@ -185,6 +228,22 @@ class MainActivity : AppCompatActivity() {
         } else {
             Log.e("GoogleFit", "GoogleSignInAccount is null")
         }
+    }
+
+
+
+    ////////////yaHA
+    // Function to save the goal
+    fun saveGoal(goal: String) {
+        if (goal.isNotEmpty()) {
+            Toast.makeText(this, "Goal Updated: $goal", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Function to hide the keyboard
+    fun hideKeyboard(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     override fun onDestroy() {
